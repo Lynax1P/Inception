@@ -1,0 +1,61 @@
+version:   "3.9"
+
+networks:
+  project:
+
+volumes:
+  db:
+    driver: local
+    driver_opts:
+      o: bind
+      type: volume
+      device: /home/tor/Documents/Docker/data/db
+  wp:
+    driver: local
+    driver_opts:
+      o: bind
+      type: volume
+      device: /home/tor/Documents/Docker/data/wp
+
+services:
+  nginx:
+    container_name: nginx
+    depends_on:
+      - wordpress
+    ports:
+      - 80:80
+    build: ./requirements/nginx
+    volumes:
+      - /home/tor/Documents/Docker/data/wp:/var/www/wordpress
+    env_file:
+      - .env
+    networks:
+      - project
+
+  wordpress:
+    container_name: wordpress
+    depends_on:
+      - mariadb
+    env_file:
+      - .env
+    volumes:
+      - /home/tor/Documents/Docker/data/wp:/var/www/wordpress
+    build: ./requirements/wordpress
+    expose:
+     - "9000"
+    restart: on-failure
+    networks:
+      - project
+    
+  mysql:
+    container_name: mariadb
+    env_file:
+      - .env
+    volumes:
+      - /home/tor/Documents/Docker/data/db:/var/lib/mysql
+    build: ./requirements/mariadb
+    networks:
+      - project
+    expose:
+      - "3306"
+    restart: on-failure
