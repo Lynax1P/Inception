@@ -7,5 +7,5 @@ mysql -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${WP_USER}\`@'%'"
 mysql -e "FLUSH PRIVILEGES"
 
 service mysql stop
-sleep 10
+
 exec mysqld -u root --datadir="/var/lib/mysql"

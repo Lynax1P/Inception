@@ -10,7 +10,7 @@ up :
 	mkdir -p $(PATH_DATE) && sudo chmod 777 $(PATH_DATE)
 	mkdir -p $(PATH_WP) &&  sudo chmod 777 $(PATH_WP)
 	mkdir -p $(PATH_DB) &&  sudo chmod 777 $(PATH_DB)
-	sudo docker-compose -f  srcs/docker-compose.yaml build --no-cache
+	sudo docker-compose -f  srcs/docker-compose.yaml build 
 	sudo docker-compose -f  srcs/docker-compose.yaml up -d 
 
 down:
