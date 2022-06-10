@@ -1,16 +1,7 @@
 FROM debian:buster
-
-RUN		apt-get update -y && apt-get -y upgrade
-
-RUN		apt-get install -y nginx wget
-
-COPY	conf/new.conf /etc/nginx/nginx.conf
-COPY	conf/nginx.conf /etc/nginx/sites-available/site.conf
-RUN		ln -s /etc/nginx/sites-available/site.conf /etc/nginx/sites-enabled/site.conf
-
-RUN 	openssl req -x509 -nodes -days 1 -newkey rsa:2048 		\
-		-subj "/C=FR/ST=MOSKOW/L=KAZAN/O=INCEPTION/CN=csherill.42.fr" \
-		-keyout etc/ssl/private/nginx-cert.key					\
-		-out etc/ssl/certs/nginx-cert.crt
-EXPOSE 443
-CMD [ "nginx", "-g", "daemon off;" ]
+RUN apt-get  update
+RUN apt-get  install nginx -y
+RUN apt-get  install openssl -y
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx.key -out /etc/ssl/certs/nginx.crt -subj "/C=RU/ST=Kazan/L=Kazan/O=wordpress_database/OU=SavchenkoDV/CN=127.0.0.1"
+COPY ./default etc/nginx/sites-enabled/default
+CMD ["nginx", "-g", "daemon off;"]

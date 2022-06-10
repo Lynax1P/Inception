@@ -2,60 +2,75 @@ version:   "3.9"
 
 networks:
   project:
+    name : inet
 
 volumes:
   db:
+    name: db
     driver: local
     driver_opts:
       o: bind
       type: volume
-      device: /home/tor/Documents/Docker/data/db
+      device: /home/tor/Inception/data/db
   wp:
+    name: wp
     driver: local
     driver_opts:
       o: bind
       type: volume
-      device: /home/tor/Documents/Docker/data/wp
+      device: /home/tor/Inception/data/wp
 
 services:
+  mariadb:
+    container_name: mariadb
+    build: ./requirements/mariadb
+    image: mariadb
+    ports: 
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 4m3SxCpaQb*6LB#
+      MYSQL_DATABASE: db_wordpress
+      MYSQL_USER: user_wp
+      MYSQL_PASSWORD: user_wp
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - project
+    restart: always
+
   nginx:
     container_name: nginx
+    build: ./requirements/nginx
+    image: nginx
     depends_on:
       - wordpress
     ports:
-      - 80:80
-    build: ./requirements/nginx
+      - "443:443"
     volumes:
-      - /home/tor/Documents/Docker/data/wp:/var/www/wordpress
+      - wp:/var/www/wordpress
     env_file:
       - .env
     networks:
       - project
+    restart: always
 
   wordpress:
     container_name: wordpress
     depends_on:
       - mariadb
-    env_file:
-      - .env
+    environment:
+      WORDPRESS_DB_HOST: mariadb:3306
+      MYSQL_ROOT_PASSWORD: 4m3SxCpaQb*6LB#
+      WORDPRESS_DB_NAME: db_wordpress
+      WORDPRESS_DB_USER: user_wp
+      WORDPRESS_DB_PASSWORD: user_wp
+      WORDPRESS_TABLE_PREFIX: wp_
     volumes:
-      - /home/tor/Documents/Docker/data/wp:/var/www/wordpress
+      - wp:/var/www/wordpress
     build: ./requirements/wordpress
     expose:
      - "9000"
-    restart: on-failure
+    restart: always
     networks:
       - project
-    
-  mysql:
-    container_name: mariadb
-    env_file:
-      - .env
-    volumes:
-      - /home/tor/Documents/Docker/data/db:/var/lib/mysql
-    build: ./requirements/mariadb
-    networks:
-      - project
-    expose:
-      - "3306"
-    restart: on-failure
+
