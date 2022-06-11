@@ -14,7 +14,8 @@ up :
 
 set: 
 	echo "127.0.0.1 csherill.42.fr" | sudo tee -a /etc/hosts
-
+climage:
+	sudo docker image rm -f $$(sudo docker image ls -aq)
 down:
 	sudo docker-compose -f srcs/docker-compose.yaml down
 clean:
